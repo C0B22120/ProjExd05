@@ -112,7 +112,7 @@ class Tower(pg.sprite.Sprite):
     """
     def __init__(self) :
         super().__init__()
-        self.image=pg.transform.rotozoom(pg.image.load(f"ex05/fig/honey.png"), 0, 0.8)
+        self.image=pg.transform.rotozoom(pg.image.load(f"ex05/fig/tower.png"), 0, 0.8)
         self.life = 3
         self.rect = self.image.get_rect()
         self.rect.center = WIDTH/2,HEIGHT/2
