@@ -140,7 +140,7 @@ class Enemy(pg.sprite.Sprite):
         super().__init__()
         self.image = random.choice(__class__.imgs)
         self.rect = self.image.get_rect()
-        if place == 0:
+        if place == 0:  #以下のif文で呼び出し時の値によって出現場所を決める
             self.rect.center = random.randint(0, WIDTH), 0
         elif place == 1:
             self.rect.center = WIDTH,random.randint(0,HEIGHT)
@@ -148,7 +148,7 @@ class Enemy(pg.sprite.Sprite):
             self.rect.center = random.randint(0,WIDTH),HEIGHT
         elif place == 3:
             self.rect.center = 0,random.randint(0,HEIGHT)
-        self.vx, self.vy = calc_orientation(self.rect, tower.rect)  
+        self.vx, self.vy = calc_orientation(self.rect, tower.rect)  #towerに向かうように方向ベクトルの設定
         self.speed = 6
 
     def update(self):
@@ -184,14 +184,15 @@ def main():
     pg.display.set_caption("守れ!こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
     bg_img = pg.image.load("ex05/fig/bg_natural_mori.jpg")
-    fonto  = pg.font.Font(None, 50)
+
     score = Score()
     hero = Hero(3, (900, 400))
     emys = pg.sprite.Group() 
     tower = Tower()
-
+    fonto  = pg.font.Font(None, 50)
     tmr = 0
     clock = pg.time.Clock()
+
     while True:
         key_lst = pg.key.get_pressed()
         for event in pg.event.get():
@@ -210,17 +211,17 @@ def main():
                 tower.life -=1  #lifeを減らす
                 emy.kill()  
             else:
+                screen.blit(pg.transform.rotozoom(pg.image.load("ex05/fig/text_gameover.png"),0,0.4),[600,250])
                 hero.change_img("lose", screen) # こうかとん悲しみエフェクト
                 tower.life -=1
                 score.update(screen)
                 tower.update(screen)
                 screen.blit(txt_time, [WIDTH/2, 50])
-                screen.blit(pg.transform.rotozoom(pg.image.load("ex05/fig/text_gameover.png"),0,0.4),[600,250])
                 pg.display.update()
                 time.sleep(2)
                 return
 
-        txt_time = fonto.render(str(tmr/50), True, (0, 0,0))
+        txt_time = fonto.render(str(tmr/50), True, (0, 0 ,0 ))
         screen.blit(txt_time, [WIDTH/2, 50])
         hero.update(key_lst, screen)
         emys.update()
