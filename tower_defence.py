@@ -199,7 +199,7 @@ def main():
                 return 0
         screen.blit(bg_img, [0, 0])
         
-        if tmr%20 == 0:  # 200フレームに1回，敵機を出現させる
+        if tmr%200 == 0:  # 200フレームに1回，敵機を出現させる
             emys.add(Enemy(random.randint(0,3),tower))  #randintで出現位置を四方向から選び、towerで方向の指定
         for emy in pg.sprite.spritecollide(hero, emys, True):
                 emy.kill()
@@ -215,7 +215,7 @@ def main():
                 score.update(screen)
                 tower.update(screen)
                 screen.blit(txt_time, [WIDTH/2, 50])
-                screen.blit(pg.transform.rotozoom(pg.image.load("ex05/fig/text_gameover.png"),0,0.4),[600,300])
+                screen.blit(pg.transform.rotozoom(pg.image.load("ex05/fig/text_gameover.png"),0,0.4),[600,250])
                 pg.display.update()
                 time.sleep(2)
                 return
