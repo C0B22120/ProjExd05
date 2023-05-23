@@ -46,7 +46,7 @@ class Hero(pg.sprite.Sprite):
         pg.K_RIGHT: (+1, 0),
     }
 
-    def __init__(self, num: int, xy: tuple[int, int]):
+    def __init__(self,xy: tuple[int, int]):
         """
         こうかとん画像Surfaceを生成する
         引数1 num：こうかとん画像ファイル名の番号
@@ -73,8 +73,8 @@ class Hero(pg.sprite.Sprite):
 
     def change_img(self, num: str, screen: pg.Surface):
         """
-        こうかとん画像を切り替え，画面に転送する
-        引数1 num：こうかとん画像ファイル名の番号
+        主人公画像を切り替え，画面に転送する
+        引数1 num：変更後画像ファイル名
         引数2 screen：画面Surface
         """
         self.image = pg.transform.rotozoom(pg.image.load(f"ex05/fig/{num}.png"), 0, 0.1)
@@ -82,7 +82,7 @@ class Hero(pg.sprite.Sprite):
 
     def update(self, key_lst: list[bool], screen: pg.Surface):
         """
-        押下キーに応じてこうかとんを移動させる
+        押下キーに応じて主人公を移動させる
         引数1 key_lst：押下キーの真理値リスト
         引数2 screen：画面Surface
         """
@@ -117,7 +117,7 @@ class Tower(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = WIDTH/2,HEIGHT/2
 
-        self.font = pg.font.Font(None, 50)
+        self.font = pg.font.Font(None, 50)  #life表示のための用意
         self.color = (255, 0 , 0)
         self.displife = self.font.render(f"Life: {self.life}", 0, self.color)
 
@@ -186,7 +186,7 @@ def main():
     bg_img = pg.image.load("ex05/fig/bg_natural_mori.jpg")
 
     score = Score()
-    hero = Hero(3, (900, 400))
+    hero = Hero( (900, 400))
     emys = pg.sprite.Group() 
     tower = Tower()
     fonto  = pg.font.Font(None, 50)
@@ -198,9 +198,14 @@ def main():
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 return 0
+            if event.type == pg.KEYDOWN and event.key == pg.K_RSHIFT:
+                if score.score >= 50:
+                    tower.life += 1
+                    score.score -= 50
+                    
         screen.blit(bg_img, [0, 0])
         
-        if tmr%200 == 0:  # 200フレームに1回，敵機を出現させる
+        if tmr%20 == 0:  # 200フレームに1回，敵機を出現させる
             emys.add(Enemy(random.randint(0,3),tower))  #randintで出現位置を四方向から選び、towerで方向の指定
         for emy in pg.sprite.spritecollide(hero, emys, True):
                 emy.kill()
@@ -212,7 +217,7 @@ def main():
                 emy.kill()  
             else:
                 screen.blit(pg.transform.rotozoom(pg.image.load("ex05/fig/text_gameover.png"),0,0.4),[600,250])
-                hero.change_img("lose", screen) # こうかとん悲しみエフェクト
+                hero.change_img("lose", screen) # 悲しみエフェクト
                 tower.life -=1
                 score.update(screen)
                 tower.update(screen)
