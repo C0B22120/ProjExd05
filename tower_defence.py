@@ -13,16 +13,14 @@ WIDTH = 1600  # ゲームウィンドウの幅
 HEIGHT = 900  # ゲームウィンドウの高さ
 
 def load_sound(file):
-    """because pygame can be be compiled without mixer."""
-    if not pg.mixer:
-        return None
+    """指定した名称のファイルをfigフォルダから出して
+    音を出力する準備をする
+    """
+
     file = os.path.join( "fig", file)
-    try:
-        sound = pg.mixer.Sound(file)
-        return sound
-    except pg.error:
-        print("Warning, unable to load, %s" % file)
-    return None
+    sound = pg.mixer.Sound(file)
+    return sound
+
 
 def check_bound(obj: pg.Rect) -> tuple[bool, bool]:
     """
@@ -217,7 +215,7 @@ def main():
                     
         screen.blit(bg_img, [0, 0])
         
-        if tmr%20 == 0:  # 200フレームに1回，敵機を出現させる
+        if tmr%200 == 0:  # 200フレームに1回，敵機を出現させる
             emys.add(Enemy(random.randint(0,3),tower))  #randintで出現位置を四方向から選び、towerで方向の指定
         for emy in pg.sprite.spritecollide(hero, emys, True):
                 emy.kill()
