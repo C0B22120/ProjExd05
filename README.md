@@ -20,7 +20,7 @@
 * 画像名称は分かりやすいように整理済
 * 画像サイズは感覚で処理しているため微修正の余地あり
 * 音の候補はいくつかfigに残しあり
-* alien.py R58,R271,R378あたりを見る
+* alien.py R58,R271,R378あたりを参考
 ### 参照
 * 画像　いらすとや (https://www.irasutoya.com/)
 * 効果音　効果音ラボ（https://soundeffect-lab.info/）
