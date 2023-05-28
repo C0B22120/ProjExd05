@@ -3,6 +3,7 @@ import random
 import sys
 import time
 from typing import Any
+import os
 
 import pygame as pg
 from pygame.sprite import AbstractGroup
@@ -10,6 +11,18 @@ from pygame.sprite import AbstractGroup
 
 WIDTH = 1600  # ゲームウィンドウの幅
 HEIGHT = 900  # ゲームウィンドウの高さ
+
+def load_sound(file):
+    """because pygame can be be compiled without mixer."""
+    if not pg.mixer:
+        return None
+    file = os.path.join( "fig", file)
+    try:
+        sound = pg.mixer.Sound(file)
+        return sound
+    except pg.error:
+        print("Warning, unable to load, %s" % file)
+    return None
 
 def check_bound(obj: pg.Rect) -> tuple[bool, bool]:
     """
@@ -53,7 +66,7 @@ class Hero(pg.sprite.Sprite):
         引数2 xy：こうかとん画像の位置座標タプル
         """
         super().__init__()
-        img0 = pg.transform.rotozoom(pg.image.load(f"ex05/fig/hero.png"), 0, 0.1)
+        img0 = pg.transform.rotozoom(pg.image.load(f"fig/hero.png"), 0, 0.1)
         img = pg.transform.flip(img0, True, False)  # デフォルトのこうかとん
         self.imgs = {
             (+1, 0): img,  # 右
@@ -77,7 +90,7 @@ class Hero(pg.sprite.Sprite):
         引数1 num：変更後画像ファイル名
         引数2 screen：画面Surface
         """
-        self.image = pg.transform.rotozoom(pg.image.load(f"ex05/fig/{num}.png"), 0, 0.1)
+        self.image = pg.transform.rotozoom(pg.image.load(f"fig/{num}.png"), 0, 0.1)
         screen.blit(self.image, self.rect)
 
     def update(self, key_lst: list[bool], screen: pg.Surface):
@@ -112,7 +125,7 @@ class Tower(pg.sprite.Sprite):
     """
     def __init__(self) :
         super().__init__()
-        self.image=pg.transform.rotozoom(pg.image.load(f"ex05/fig/tower.png"), 0, 0.8)
+        self.image=pg.transform.rotozoom(pg.image.load(f"fig/tower.png"), 0, 0.8)
         self.life = 3
         self.rect = self.image.get_rect()
         self.rect.center = WIDTH/2,HEIGHT/2
@@ -134,7 +147,7 @@ class Enemy(pg.sprite.Sprite):
     """
     敵機に関するクラス
     """
-    imgs = [pg.transform.rotozoom(pg.image.load(f"ex05/fig/ene{i}.png"),0,0.15) for i in range(1, 4)]
+    imgs = [pg.transform.rotozoom(pg.image.load(f"fig/ene{i}.png"),0,0.15) for i in range(1, 4)]
     
     def __init__(self,place: int,tower: Tower):
         super().__init__()
@@ -183,7 +196,9 @@ class Score:
 def main():
     pg.display.set_caption("守れ!こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
-    bg_img = pg.image.load("ex05/fig/bg_natural_mori.jpg")
+    bg_img = pg.image.load("fig/bg_natural_mori.jpg")
+    atk_sound = load_sound("紙を破く1.mp3")
+    end_sound = load_sound("チーン1.mp3")
 
     score = Score()
     hero = Hero( (900, 400))
@@ -198,10 +213,7 @@ def main():
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 return 0
-            if event.type == pg.KEYDOWN and event.key == pg.K_RSHIFT:
-                if score.score >= 50:
-                    tower.life += 1
-                    score.score -= 50
+
                     
         screen.blit(bg_img, [0, 0])
         
@@ -209,6 +221,8 @@ def main():
             emys.add(Enemy(random.randint(0,3),tower))  #randintで出現位置を四方向から選び、towerで方向の指定
         for emy in pg.sprite.spritecollide(hero, emys, True):
                 emy.kill()
+                if pg.mixer:
+                    atk_sound.play()
                 score.score_up(1)
 
         for emy in pg.sprite.spritecollide(tower, emys, True):
@@ -216,8 +230,9 @@ def main():
                 tower.life -=1  #lifeを減らす
                 emy.kill()  
             else:
-                screen.blit(pg.transform.rotozoom(pg.image.load("ex05/fig/text_gameover.png"),0,0.4),[600,250])
+                screen.blit(pg.transform.rotozoom(pg.image.load("fig/text_gameover.png"),0,0.4),[600,250])
                 hero.change_img("lose", screen) # 悲しみエフェクト
+                end_sound.play()
                 tower.life -=1
                 score.update(screen)
                 tower.update(screen)
